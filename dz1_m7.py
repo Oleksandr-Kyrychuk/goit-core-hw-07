@@ -47,13 +47,19 @@ class Phone(Field):
 # Клас для дня народження: перевіряємо формат та перетворюємо рядок на datetime
 class Birthday(Field):
     def __init__(self, value):
+        if not self.validate(value):
+            raise ValueError
+        self.value = value
+    def validate(self, value):
+        
         try:
-            self.value = datetime.strptime(value, "%d.%m.%Y")
+            datetime.strptime(value, "%d.%m.%Y")
+            return True
         except ValueError:
-            raise ValueError("Invalid date format. Use DD.MM.YYYY")
-
+            return False
+    
     def __str__(self):
-        return self.value.strftime("%d.%m.%Y")
+        return self.value
 
 
 class Record:
@@ -135,7 +141,7 @@ class AddressBook(UserDict):
 # Функція для розбору введення користувача
 def parse_input(user_input):
     parts = user_input.strip().split()
-    command = parts[0] if parts else ""
+    command = parts[0].lower() if parts else ""
     args = parts[1:]
     return command, args
 
