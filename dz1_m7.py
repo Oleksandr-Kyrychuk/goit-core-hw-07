@@ -48,18 +48,23 @@ class Phone(Field):
 class Birthday(Field):
     def __init__(self, value):
         if not self.validate(value):
-            raise ValueError
-        self.value = value
+            raise ValueError("Invalid date format.")
+        self.value = value  # зберігаємо значення як рядок
+
     def validate(self, value):
-        
         try:
+            # Перевіряємо правильність формату
             datetime.strptime(value, "%d.%m.%Y")
             return True
         except ValueError:
             return False
     
     def __str__(self):
-        return self.value
+        return self.value  # Повертаємо значення у вигляді рядка
+    
+    def to_datetime(self):
+        # Перетворюємо значення в datetime для обчислень
+        return datetime.strptime(self.value, "%d.%m.%Y")
 
 
 class Record:
@@ -110,30 +115,29 @@ class AddressBook(UserDict):
             raise ValueError("Record not found.")
 
     def get_upcoming_birthdays(self):
-
         upcoming = []
         today = datetime.now().date()
         for record in self.data.values():
             if record.birthday:
-                # Обчислюємо наступний день народження
-                bd = record.birthday.value
-                current_year_bd = bd.replace(year=today.year).date()
-                if current_year_bd < today:
-                    next_bd = bd.replace(year=today.year + 1).date()
-                else:
-                    next_bd = current_year_bd
+                bd = record.birthday.to_datetime()  # Перетворюємо рядок на datetime
+                current_year_bd = bd.replace(year=today.year).date()  # Використовуємо datetime для маніпуляцій
+            if current_year_bd < today:
+                next_bd = bd.replace(year=today.year + 1).date()
+            else:
+                next_bd = current_year_bd
 
-                delta = (next_bd - today).days
-                if 0 <= delta <= 7:
-                    # Якщо наступний день народження припадає на вихідний, переносимо привітання на понеділок
-                    if next_bd.weekday() == 5:  # субота
-                        greeting_date = next_bd + timedelta(days=2)
-                    elif next_bd.weekday() == 6:  # неділя
-                        greeting_date = next_bd + timedelta(days=1)
-                    else:
-                        greeting_date = next_bd
-                    upcoming.append({"name": record.name.value, "birthday": greeting_date.strftime("%d.%m.%Y")})
+            delta = (next_bd - today).days
+            if 0 <= delta <= 7:
+                # Якщо наступний день народження припадає на вихідний, переносимо привітання на понеділок
+                if next_bd.weekday() == 5:  # субота
+                    greeting_date = next_bd + timedelta(days=2)
+                elif next_bd.weekday() == 6:  # неділя
+                    greeting_date = next_bd + timedelta(days=1)
+                else:
+                    greeting_date = next_bd
+                upcoming.append({"name": record.name.value, "birthday": greeting_date.strftime("%d.%m.%Y")})
         return upcoming
+
 
     def __str__(self):
         return '\n'.join(str(record) for record in self.data.values())
