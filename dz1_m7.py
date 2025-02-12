@@ -78,7 +78,7 @@ class Record:
     
     def add_birthday(self, birthday):
         self.birthday = Birthday(birthday)
-
+    
     def remove_phone(self, phone):
         phone_to_remove = next((p for p in self.phones if p.value == phone), None)
         if phone_to_remove:
@@ -148,6 +148,15 @@ def parse_input(user_input):
     command = parts[0].lower() if parts else ""
     args = parts[1:]
     return command, args
+#Функція видалення 
+@input_error
+def delete_contact(args, book: AddressBook):
+    name, *_ = args
+    try:
+        book.delete(name)
+        return f"Contact {name} deleted."
+    except ValueError:
+        return f"Error: Contact {name} not found."
 
 # Функції-обробники команд з декоратором для помилок
 @input_error
@@ -231,6 +240,8 @@ def main():
             print(change_contact(args, book))
         elif command == "phone":
             print(get_phone(args, book))
+        elif command == "delete":
+            print(delete_contact(args, book))
         elif command == "all":
             print(book)
         elif command == "add-birthday":
