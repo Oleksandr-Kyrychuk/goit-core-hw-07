@@ -121,22 +121,22 @@ class AddressBook(UserDict):
             if record.birthday:
                 bd = record.birthday.to_datetime()  # Перетворюємо рядок на datetime
                 current_year_bd = bd.replace(year=today.year).date()  # Використовуємо datetime для маніпуляцій
-            if current_year_bd < today:
-                next_bd = bd.replace(year=today.year + 1).date()
-            else:
-                next_bd = current_year_bd
-
-            delta = (next_bd - today).days
-            if 0 <= delta <= 7:
-                # Якщо наступний день народження припадає на вихідний, переносимо привітання на понеділок
-                if next_bd.weekday() == 5:  # субота
-                    greeting_date = next_bd + timedelta(days=2)
-                elif next_bd.weekday() == 6:  # неділя
-                    greeting_date = next_bd + timedelta(days=1)
+                if current_year_bd < today:
+                    next_bd = bd.replace(year=today.year + 1).date()
                 else:
-                    greeting_date = next_bd
-                upcoming.append({"name": record.name.value, "birthday": greeting_date.strftime("%d.%m.%Y")})
-        return upcoming
+                    next_bd = current_year_bd
+
+                delta = (next_bd - today).days
+                if 0 <= delta <= 7:
+                    # Якщо наступний день народження припадає на вихідний, переносимо привітання на понеділок
+                    if next_bd.weekday() == 5:  # субота
+                        greeting_date = next_bd + timedelta(days=2)
+                    elif next_bd.weekday() == 6:  # неділя
+                        greeting_date = next_bd + timedelta(days=1)
+                    else:
+                        greeting_date = next_bd
+                    upcoming.append({"name": record.name.value, "birthday": greeting_date.strftime("%d.%m.%Y")})
+            return upcoming
 
 
     def __str__(self):
