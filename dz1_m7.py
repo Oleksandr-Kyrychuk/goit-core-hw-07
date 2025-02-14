@@ -136,7 +136,7 @@ class AddressBook(UserDict):
                     else:
                         greeting_date = next_bd
                     upcoming.append({"name": record.name.value, "birthday": greeting_date.strftime("%d.%m.%Y")})
-                return upcoming
+                    return upcoming
 
 
     def __str__(self):
